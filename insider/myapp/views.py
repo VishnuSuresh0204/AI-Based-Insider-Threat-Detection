@@ -9,14 +9,14 @@ from django.http import JsonResponse
  
  
 # Helper function to check if user is logged in
-def require_login(request, redirect_url="/login"):
+def require_login(request, redirect_url="/login/"):
     if "lid" not in request.session:
         messages.error(request, "Please log in to access this page")
         return redirect(redirect_url)
     return None
  
  
-def require_admin(request, redirect_url="/login"):
+def require_admin(request, redirect_url="/login/"):
     chk = require_login(request, redirect_url)
     if chk:
         return chk
@@ -41,19 +41,19 @@ def login_view(request):
             if user.userType == "admin":
                 login(request, user)
                 request.session["lid"] = user.id
-                return redirect("/admin_home")
+                return redirect("/admin_home/")
             elif user.userType == "employee":
                 e = EmployeeProfile.objects.get(loginid=user)
                 if e.status == "active":
                     login(request, user)
                     request.session["lid"] = user.id
-                    return redirect("/employee_home")
+                    return redirect("/employee_home/")
                 else:
                     messages.error(request, f"Access denied. Account status: {e.status}")
-                    return redirect("/login")
+                    return redirect("/login/")
         else:
             messages.error(request, "Invalid username or password")
-            return redirect("/login")
+            return redirect("/login/")
     return render(request, "login.html")
  
  
@@ -78,7 +78,7 @@ def register_employee(request):
  
         if Login.objects.filter(username=u).exists():
             messages.error(request, "Username already exists")
-            return redirect("/register_employee")
+            return redirect("/register_employee/")
  
         l = Login.objects.create_user(username=u, password=p, userType="employee", viewPass=p)
  
@@ -88,7 +88,7 @@ def register_employee(request):
             date_joined_org=timezone.now().date()
         )
         messages.success(request, "Registration successful. Wait for admin approval.")
-        return redirect("/login")
+        return redirect("/login/")
     return render(request, "employee_register.html")
  
  
@@ -119,5 +119,5 @@ def admin_employee_action(request):
     l.save()
     e.status = "active" if act == "unblock" else "blocked"
     e.save()
-    return redirect("/admin_view_employees")
+    return redirect("/admin_view_employees/")
  
