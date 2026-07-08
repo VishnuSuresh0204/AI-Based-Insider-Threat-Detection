@@ -1,0 +1,412 @@
+{% extends "ADMIN/base_admin.html" %}
+
+{% block title %}Employees — AI Insider Admin{% endblock %}
+{% block nav_employees %}active{% endblock %}
+
+{% block extra_styles %}
+/* TABLE CARD */
+.table-card { background: rgba(5,9,19,0.7); backdrop-filter: blur(20px); border: 1px solid var(--border); border-radius: 18px; overflow: hidden; }
+
+.table-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1.25rem 1.5rem;
+  border-bottom: 1px solid var(--border);
+  flex-wrap: wrap;
+  gap: 1rem;
+  background: linear-gradient(90deg, rgba(0,212,255,0.04), rgba(124,58,237,0.04));
+}
+
+.toolbar-left { display: flex; align-items: center; gap: 1rem; flex-wrap: wrap; }
+.toolbar-right { display: flex; align-items: center; gap: .6rem; }
+
+.filter-tabs { display: flex; gap: .35rem; }
+
+.filter-tab {
+  padding: .4rem .85rem;
+  border-radius: 8px;
+  font-size: .78rem;
+  font-weight: 600;
+  cursor: pointer;
+  border: 1px solid rgba(0,212,255,0.15);
+  background: transparent;
+  color: var(--text-muted);
+  transition: all .2s;
+  text-decoration: none;
+}
+.filter-tab:hover, .filter-tab.active {
+  background: rgba(0,212,255,0.1);
+  border-color: var(--primary);
+  color: var(--primary);
+}
+
+.table-search { display: flex; align-items: center; gap: .5rem; background: rgba(255,255,255,0.04); border: 1px solid rgba(0,212,255,0.12); border-radius: 8px; padding: .4rem .85rem; }
+.table-search input { background: none; border: none; outline: none; color: var(--text); font-size: .82rem; width: 180px; }
+.table-search input::placeholder { color: var(--text-muted); }
+.table-search i { color: var(--text-muted); font-size: .8rem; }
+
+/* TABLE */
+.employee-table { width: 100%; border-collapse: collapse; }
+
+.employee-table th {
+  padding: .85rem 1.25rem;
+  text-align: left;
+  font-size: .7rem;
+  font-weight: 700;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  border-bottom: 1px solid var(--border);
+  white-space: nowrap;
+  background: rgba(0,212,255,0.02);
+}
+
+.employee-table td {
+  padding: 1rem 1.25rem;
+  font-size: .875rem;
+  border-bottom: 1px solid rgba(0,212,255,0.04);
+  vertical-align: middle;
+}
+
+.employee-table tbody tr:last-child td { border-bottom: none; }
+
+.employee-table tbody tr {
+  transition: background .15s;
+}
+.employee-table tbody tr:hover { background: rgba(0,212,255,0.025); }
+
+/* EMPLOYEE CELL */
+.emp-cell { display: flex; align-items: center; gap: .85rem; }
+
+.emp-avatar {
+  width: 40px; height: 40px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--primary), var(--secondary));
+  display: flex; align-items: center; justify-content: center;
+  font-weight: 700; font-size: .9rem; color: #fff;
+  flex-shrink: 0;
+  overflow: hidden;
+}
+
+.emp-avatar img { width: 100%; height: 100%; object-fit: cover; }
+
+.emp-name { font-weight: 600; color: var(--text); font-size: .875rem; }
+.emp-id   { font-size: .72rem; color: var(--text-muted); margin-top: .1rem; }
+
+/* DEPT BADGE */
+.dept-badge {
+  display: inline-flex; align-items: center; gap: .35rem;
+  padding: .3rem .7rem;
+  background: rgba(124,58,237,0.1);
+  border: 1px solid rgba(124,58,237,0.2);
+  border-radius: 20px;
+  font-size: .72rem; font-weight: 600; color: #a78bfa;
+}
+
+/* ACTIONS */
+.action-btns { display: flex; align-items: center; gap: .5rem; }
+
+/* EMPTY STATE */
+.empty-state {
+  text-align: center;
+  padding: 4rem 2rem;
+  color: var(--text-muted);
+}
+.empty-icon { font-size: 3rem; margin-bottom: 1rem; color: rgba(0,212,255,0.3); }
+.empty-state h3 { font-size: 1rem; font-weight: 600; color: var(--text); margin-bottom: .5rem; }
+.empty-state p  { font-size: .85rem; }
+
+/* TABLE FOOTER */
+.table-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem 1.5rem;
+  border-top: 1px solid var(--border);
+  font-size: .78rem;
+  color: var(--text-muted);
+  flex-wrap: wrap;
+  gap: .5rem;
+}
+
+/* MODAL */
+.modal-overlay {
+  display: none;
+  position: fixed; inset: 0; z-index: 500;
+  background: rgba(5,9,19,0.8);
+  backdrop-filter: blur(8px);
+  align-items: center; justify-content: center;
+}
+.modal-overlay.show { display: flex; }
+
+.modal-box {
+  background: rgba(10,15,30,0.95);
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  padding: 2rem;
+  max-width: 420px; width: 90%;
+  animation: modal-in .25s ease;
+  text-align: center;
+}
+
+@keyframes modal-in {
+  from { opacity:0; transform:scale(.9); }
+  to   { opacity:1; transform:scale(1); }
+}
+
+.modal-icon { font-size: 3rem; margin-bottom: 1rem; }
+.modal-title { font-size: 1.1rem; font-weight: 700; color: var(--text); margin-bottom: .5rem; }
+.modal-desc  { font-size: .875rem; color: var(--text-muted); margin-bottom: 1.5rem; }
+.modal-actions { display: flex; gap: .75rem; justify-content: center; }
+{% endblock %}
+
+{% block content %}
+
+<div class="page-header">
+  <div class="page-header-left">
+    <h1>Employee Management</h1>
+    <div class="breadcrumb">
+      <a href="/admin_home"><i class="fas fa-house"></i> Home</a>
+      <i class="fas fa-chevron-right"></i>
+      <span>Employees</span>
+    </div>
+  </div>
+</div>
+
+<div class="table-card">
+
+  <!-- Toolbar -->
+  <div class="table-toolbar">
+    <div class="toolbar-left">
+      <div class="filter-tabs">
+        <span class="filter-tab active">All</span>
+        <span class="filter-tab" onclick="filterStatus('active')">Active</span>
+        <span class="filter-tab" onclick="filterStatus('blocked')">Blocked</span>
+      </div>
+      <div class="table-search">
+        <i class="fas fa-magnifying-glass"></i>
+        <input type="text" id="searchInput" placeholder="Search employees…" onkeyup="filterTable()"/>
+      </div>
+    </div>
+    <div class="toolbar-right">
+      <span style="font-size:.78rem;color:var(--text-muted);">
+        Total: <strong style="color:var(--primary);">{{ val|length }}</strong>
+      </span>
+    </div>
+  </div>
+
+  <!-- Table -->
+  <div style="overflow-x:auto;">
+    <table class="employee-table" id="empTable">
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Employee</th>
+          <th>Contact</th>
+          <th>Department</th>
+          <th>Designation</th>
+          <th>Joined</th>
+          <th>Status</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% if val %}
+          {% for e in val %}
+          <tr class="emp-row" data-status="{{ e.status }}" data-name="{{ e.name|lower }}" data-dept="{{ e.department|lower }}">
+
+            <td style="color:var(--text-muted);font-size:.78rem;font-weight:600;">{{ forloop.counter }}</td>
+
+            <!-- Employee -->
+            <td>
+              <div class="emp-cell">
+                <div class="emp-avatar">
+                  {% if e.profile_pic %}
+                    <img src="{{ e.profile_pic.url }}" alt="{{ e.name }}"/>
+                  {% else %}
+                    {{ e.name|first|upper }}
+                  {% endif %}
+                </div>
+                <div>
+                  <div class="emp-name">{{ e.name }}</div>
+                  <div class="emp-id">ID: {{ e.employee_id|default:"N/A" }}</div>
+                </div>
+              </div>
+            </td>
+
+            <!-- Contact -->
+            <td>
+              <div style="font-size:.82rem;">
+                <div style="color:var(--text);">{{ e.email }}</div>
+                <div style="color:var(--text-muted);margin-top:.15rem;"><i class="fas fa-phone" style="font-size:.7rem;"></i> {{ e.phone|default:"N/A" }}</div>
+              </div>
+            </td>
+
+            <!-- Department -->
+            <td>
+              {% if e.department %}
+                <span class="dept-badge"><i class="fas fa-building"></i>{{ e.department }}</span>
+              {% else %}
+                <span style="color:var(--text-muted);font-size:.8rem;">—</span>
+              {% endif %}
+            </td>
+
+            <!-- Designation -->
+            <td style="font-size:.82rem;color:var(--text-muted);">{{ e.designation|default:"—" }}</td>
+
+            <!-- Joined -->
+            <td style="font-size:.78rem;color:var(--text-muted);white-space:nowrap;">
+              {{ e.date_joined_org|date:"M d, Y"|default:"—" }}
+            </td>
+
+            <!-- Status -->
+            <td>
+              {% if e.status == "active" %}
+                <span class="badge badge-active">active</span>
+              {% elif e.status == "blocked" %}
+                <span class="badge badge-blocked">blocked</span>
+              {% else %}
+                <span class="badge badge-pending">{{ e.status }}</span>
+              {% endif %}
+            </td>
+
+            <!-- Actions -->
+            <td>
+              <div class="action-btns">
+                {% if e.status == "active" %}
+                  <a href="/admin_employee_action?id={{ e.id }}&act=block"
+                     class="btn-danger"
+                     onclick="return confirmAction(event, 'block', '{{ e.name }}')">
+                    <i class="fas fa-ban"></i> Block
+                  </a>
+                {% else %}
+                  <a href="/admin_employee_action?id={{ e.id }}&act=unblock"
+                     class="btn-success"
+                     onclick="return confirmAction(event, 'unblock', '{{ e.name }}')">
+                    <i class="fas fa-circle-check"></i> Activate
+                  </a>
+                {% endif %}
+              </div>
+            </td>
+
+          </tr>
+          {% endfor %}
+        {% else %}
+          <tr>
+            <td colspan="8">
+              <div class="empty-state">
+                <div class="empty-icon"><i class="fas fa-users"></i></div>
+                <h3>No employees found</h3>
+                <p>No employee records are available yet.</p>
+              </div>
+            </td>
+          </tr>
+        {% endif %}
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Footer -->
+  <div class="table-footer">
+    <span>Showing <strong id="visibleCount">{{ val|length }}</strong> of <strong>{{ val|length }}</strong> employees</span>
+    <span style="display:flex;align-items:center;gap:.4rem;color:var(--accent);">
+      <i class="fas fa-circle" style="font-size:.5rem;"></i> Live Data
+    </span>
+  </div>
+
+</div>
+
+<!-- Confirm Modal -->
+<div class="modal-overlay" id="confirmModal">
+  <div class="modal-box">
+    <div class="modal-icon" id="modalIcon">⚠️</div>
+    <div class="modal-title" id="modalTitle">Confirm Action</div>
+    <div class="modal-desc" id="modalDesc">Are you sure you want to perform this action?</div>
+    <div class="modal-actions">
+      <button class="btn-danger" id="modalConfirmBtn">Confirm</button>
+      <button class="btn-secondary" onclick="closeModal()" style="display:inline-flex;align-items:center;gap:.4rem;padding:.45rem .9rem;background:transparent;color:var(--text-muted);border:1px solid rgba(255,255,255,0.15);border-radius:8px;font-size:.8rem;font-weight:600;cursor:pointer;">Cancel</button>
+    </div>
+  </div>
+</div>
+
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+  let pendingHref = null;
+
+  function confirmAction(e, action, name) {
+    e.preventDefault();
+    pendingHref = e.currentTarget.href;
+    const modal = document.getElementById('confirmModal');
+    const icon = document.getElementById('modalIcon');
+    const title = document.getElementById('modalTitle');
+    const desc = document.getElementById('modalDesc');
+    const btn = document.getElementById('modalConfirmBtn');
+
+    if (action === 'block') {
+      icon.textContent = '🚫';
+      title.textContent = 'Block Employee';
+      desc.textContent = `Are you sure you want to block "${name}"? They will lose access to the system.`;
+      btn.className = 'btn-danger';
+      btn.innerHTML = '<i class="fas fa-ban"></i> Block';
+    } else {
+      icon.textContent = '✅';
+      title.textContent = 'Activate Employee';
+      desc.textContent = `Are you sure you want to activate "${name}"? They will regain system access.`;
+      btn.className = 'btn-success';
+      btn.innerHTML = '<i class="fas fa-circle-check"></i> Activate';
+    }
+
+    btn.onclick = () => { window.location.href = pendingHref; };
+    modal.classList.add('show');
+    return false;
+  }
+
+  function closeModal() {
+    document.getElementById('confirmModal').classList.remove('show');
+  }
+
+  // Click outside modal to close
+  document.getElementById('confirmModal').addEventListener('click', function(e) {
+    if (e.target === this) closeModal();
+  });
+
+  // Search filter
+  function filterTable() {
+    const q = document.getElementById('searchInput').value.toLowerCase();
+    const rows = document.querySelectorAll('.emp-row');
+    let visible = 0;
+    rows.forEach(row => {
+      const name = row.dataset.name || '';
+      const dept = row.dataset.dept || '';
+      const show = name.includes(q) || dept.includes(q);
+      row.style.display = show ? '' : 'none';
+      if (show) visible++;
+    });
+    document.getElementById('visibleCount').textContent = visible;
+  }
+
+  // Status filter tabs
+  function filterStatus(status) {
+    document.querySelectorAll('.filter-tab').forEach(t => t.classList.remove('active'));
+    event.target.classList.add('active');
+    const rows = document.querySelectorAll('.emp-row');
+    let visible = 0;
+    rows.forEach(row => {
+      const show = !status || row.dataset.status === status;
+      row.style.display = show ? '' : 'none';
+      if (show) visible++;
+    });
+    document.getElementById('visibleCount').textContent = visible;
+  }
+
+  document.querySelector('.filter-tab').addEventListener('click', function() {
+    document.querySelectorAll('.filter-tab').forEach(t => t.classList.remove('active'));
+    this.classList.add('active');
+    document.querySelectorAll('.emp-row').forEach(r => r.style.display = '');
+    document.getElementById('visibleCount').textContent = '{{ val|length }}';
+  });
+</script>
+{% endblock %}
