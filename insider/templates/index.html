@@ -1,0 +1,365 @@
+{% extends "base.html" %}
+
+{% block title %}AI Insider — Secure Intelligence Platform{% endblock %}
+
+{% block extra_styles %}
+.hero-section {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 6rem 2rem 4rem;
+  position: relative;
+}
+
+.hero-content {
+  text-align: center;
+  max-width: 900px;
+}
+
+.hero-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: .5rem;
+  padding: .4rem 1.2rem;
+  background: rgba(0,212,255,0.1);
+  border: 1px solid rgba(0,212,255,0.3);
+  border-radius: 20px;
+  font-size: .8rem;
+  font-weight: 600;
+  color: var(--primary);
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  margin-bottom: 2rem;
+  animation: fade-down .6s ease both;
+}
+
+.hero-badge .dot {
+  width: 7px; height: 7px;
+  background: var(--accent);
+  border-radius: 50%;
+  animation: blink 1.5s infinite;
+}
+
+@keyframes blink {
+  0%,100% { opacity:1; }
+  50%      { opacity:.2; }
+}
+
+@keyframes fade-down {
+  from { opacity:0; transform: translateY(-20px); }
+  to   { opacity:1; transform: translateY(0); }
+}
+
+@keyframes fade-up {
+  from { opacity:0; transform: translateY(20px); }
+  to   { opacity:1; transform: translateY(0); }
+}
+
+.hero-title {
+  font-family: 'Orbitron', sans-serif;
+  font-size: clamp(2.5rem, 6vw, 5rem);
+  font-weight: 900;
+  line-height: 1.1;
+  margin-bottom: 1.5rem;
+  animation: fade-down .7s ease .1s both;
+}
+
+.hero-title .gradient-text {
+  background: linear-gradient(135deg, var(--primary), var(--secondary), var(--accent));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.hero-subtitle {
+  font-size: 1.15rem;
+  color: var(--text-muted);
+  line-height: 1.7;
+  max-width: 650px;
+  margin: 0 auto 2.5rem;
+  animation: fade-up .7s ease .2s both;
+}
+
+.hero-actions {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+  animation: fade-up .7s ease .3s both;
+}
+
+.stats-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1.25rem;
+  max-width: 900px;
+  margin: 4rem auto 0;
+  animation: fade-up .8s ease .5s both;
+}
+
+.stat-card {
+  padding: 1.5rem;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(0,212,255,0.15);
+  border-radius: 16px;
+  backdrop-filter: blur(20px);
+  text-align: center;
+  transition: all .3s ease;
+}
+
+.stat-card:hover {
+  border-color: var(--primary);
+  transform: translateY(-4px);
+  box-shadow: 0 12px 40px rgba(0,212,255,0.15);
+}
+
+.stat-icon {
+  font-size: 2rem;
+  margin-bottom: .75rem;
+}
+
+.stat-value {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 2rem;
+  font-weight: 700;
+  background: linear-gradient(135deg, var(--primary), var(--secondary));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.stat-label {
+  font-size: .8rem;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-top: .35rem;
+}
+
+.features-section {
+  padding: 4rem 2rem;
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+.section-title {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 1.5rem;
+  font-weight: 700;
+  text-align: center;
+  margin-bottom: .75rem;
+  background: linear-gradient(135deg, var(--primary), var(--secondary));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.section-sub {
+  text-align: center;
+  color: var(--text-muted);
+  font-size: .9rem;
+  margin-bottom: 2.5rem;
+}
+
+.features-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1.25rem;
+}
+
+.feature-card {
+  padding: 1.75rem;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(0,212,255,0.12);
+  border-radius: 16px;
+  backdrop-filter: blur(20px);
+  transition: all .3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.feature-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--primary), transparent);
+  opacity: 0;
+  transition: opacity .3s;
+}
+
+.feature-card:hover::before { opacity: 1; }
+
+.feature-card:hover {
+  border-color: rgba(0,212,255,0.3);
+  transform: translateY(-4px);
+  box-shadow: 0 16px 50px rgba(0,212,255,0.1);
+}
+
+.feature-icon {
+  width: 52px; height: 52px;
+  border-radius: 12px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.4rem;
+  margin-bottom: 1.1rem;
+}
+
+.icon-cyan    { background: rgba(0,212,255,0.1); color: var(--primary); }
+.icon-purple  { background: rgba(124,58,237,0.1); color: #a78bfa; }
+.icon-green   { background: rgba(6,255,165,0.1); color: var(--accent); }
+.icon-red     { background: rgba(255,71,87,0.1); color: var(--danger); }
+
+.feature-title {
+  font-weight: 700;
+  font-size: 1rem;
+  margin-bottom: .5rem;
+  color: var(--text);
+}
+
+.feature-desc {
+  font-size: .875rem;
+  color: var(--text-muted);
+  line-height: 1.6;
+}
+
+/* Floating particles */
+.particles { position: fixed; inset: 0; z-index: -1; overflow: hidden; pointer-events: none; }
+.particle {
+  position: absolute;
+  width: 2px; height: 2px;
+  background: var(--primary);
+  border-radius: 50%;
+  animation: float linear infinite;
+  opacity: 0;
+}
+
+@keyframes float {
+  0%   { opacity:0; transform: translateY(100vh) scale(0); }
+  10%  { opacity:.6; }
+  90%  { opacity:.3; }
+  100% { opacity:0; transform: translateY(-20px) scale(1); }
+}
+{% endblock %}
+
+{% block nav_links %}
+<li><a href="/login"><i class="fas fa-right-to-bracket"></i> Login</a></li>
+<li><a href="/register_employee"><i class="fas fa-user-plus"></i> Register</a></li>
+{% endblock %}
+
+{% block nav_actions %}{% endblock %}
+
+{% block content %}
+<!-- Floating particles -->
+<div class="particles" id="particles"></div>
+
+<!-- Hero -->
+<section class="hero-section">
+  <div class="hero-content">
+    <div class="hero-badge">
+      <span class="dot"></span>
+      AI-Powered Security Intelligence
+    </div>
+
+    <h1 class="hero-title">
+      Detect Insider Threats<br/>
+      <span class="gradient-text">Before They Strike</span>
+    </h1>
+
+    <p class="hero-subtitle">
+      Harness the power of artificial intelligence to monitor, analyze, and neutralize internal security threats in real time. Protect your organization from within.
+    </p>
+
+    <div class="hero-actions">
+      <a href="/login" class="btn-primary">
+        <i class="fas fa-shield-halved"></i> Access System
+      </a>
+      <a href="/register_employee" class="btn-secondary">
+        <i class="fas fa-user-plus"></i> Register Employee
+      </a>
+    </div>
+
+    <!-- Stats -->
+    <div class="stats-row">
+      <div class="stat-card">
+        <div class="stat-icon">🛡️</div>
+        <div class="stat-value">99.8%</div>
+        <div class="stat-label">Detection Rate</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon">⚡</div>
+        <div class="stat-value">&lt;1s</div>
+        <div class="stat-label">Response Time</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon">🤖</div>
+        <div class="stat-value">AI</div>
+        <div class="stat-label">Threat Analysis</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon">🔒</div>
+        <div class="stat-value">24/7</div>
+        <div class="stat-label">Monitoring</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Features -->
+<section class="features-section">
+  <h2 class="section-title">Platform Capabilities</h2>
+  <p class="section-sub">Enterprise-grade security powered by machine learning and behavioral analytics</p>
+
+  <div class="features-grid">
+    <div class="feature-card">
+      <div class="feature-icon icon-cyan"><i class="fas fa-brain"></i></div>
+      <div class="feature-title">AI Behavior Analysis</div>
+      <div class="feature-desc">Machine learning algorithms continuously monitor employee behavior patterns to detect anomalies before threats materialize.</div>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon icon-purple"><i class="fas fa-chart-line"></i></div>
+      <div class="feature-title">Real-Time Monitoring</div>
+      <div class="feature-desc">Live dashboards track system access, data transfers, and user activity across all endpoints simultaneously.</div>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon icon-green"><i class="fas fa-users-gear"></i></div>
+      <div class="feature-title">Employee Management</div>
+      <div class="feature-desc">Centralized control to manage employee profiles, access levels, department assignments and security clearances.</div>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon icon-red"><i class="fas fa-bell"></i></div>
+      <div class="feature-title">Instant Alerts</div>
+      <div class="feature-desc">Automated threat notifications with risk scoring deliver actionable intelligence directly to security administrators.</div>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon icon-cyan"><i class="fas fa-file-shield"></i></div>
+      <div class="feature-title">Incident Reports</div>
+      <div class="feature-desc">Comprehensive audit trails and automated incident reports ensure compliance and forensic readiness.</div>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon icon-purple"><i class="fas fa-lock"></i></div>
+      <div class="feature-title">Access Control</div>
+      <div class="feature-desc">Role-based access management with multi-factor authentication ensures only authorized personnel access sensitive systems.</div>
+    </div>
+  </div>
+</section>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+  // Generate floating particles
+  const container = document.getElementById('particles');
+  for (let i = 0; i < 30; i++) {
+    const p = document.createElement('div');
+    p.className = 'particle';
+    p.style.left = Math.random() * 100 + '%';
+    p.style.animationDuration = (Math.random() * 10 + 8) + 's';
+    p.style.animationDelay = (Math.random() * 10) + 's';
+    p.style.width = p.style.height = (Math.random() * 3 + 1) + 'px';
+    const colors = ['var(--primary)', 'var(--secondary)', 'var(--accent)'];
+    p.style.background = colors[Math.floor(Math.random() * colors.length)];
+    container.appendChild(p);
+  }
+</script>
+{% endblock %}
