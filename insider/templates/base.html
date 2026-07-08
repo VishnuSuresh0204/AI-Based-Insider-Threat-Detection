@@ -1,0 +1,538 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>{% block title %}AI Insider — Threat Detection{% endblock %}</title>
+  <meta name="description" content="AI-Based Insider Threat Detection System — Monitor, detect and prevent internal security threats with advanced AI."/>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --primary:    #00d4ff;
+      --secondary:  #7c3aed;
+      --accent:     #06ffa5;
+      --danger:     #ff4757;
+      --warning:    #ffa502;
+      --bg-dark:    #050913;
+      --bg-card:    rgba(255,255,255,0.05);
+      --border:     rgba(0,212,255,0.2);
+      --text:       #e2e8f0;
+      --text-muted: #94a3b8;
+      --glass:      rgba(5,9,19,0.65);
+      --nav-h:      70px;
+    }
+
+    html, body {
+      font-family: 'Inter', sans-serif;
+      background: var(--bg-dark);
+      color: var(--text);
+      min-height: 100vh;
+      scroll-behavior: smooth;
+    }
+
+    /* ── SCROLLBAR ── */
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: var(--bg-dark); }
+    ::-webkit-scrollbar-thumb { background: var(--primary); border-radius: 3px; }
+
+    /* ── NAVBAR ── */
+    .navbar {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      height: var(--nav-h);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 2rem;
+      background: rgba(5,9,19,0.85);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--border);
+      z-index: 1000;
+      transition: all .3s ease;
+    }
+
+    .navbar-brand {
+      display: flex;
+      align-items: center;
+      gap: .75rem;
+      text-decoration: none;
+    }
+
+    .brand-icon {
+      width: 42px; height: 42px;
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.1rem;
+      color: #fff;
+      box-shadow: 0 0 20px rgba(0,212,255,0.4);
+      animation: pulse-glow 3s infinite;
+    }
+
+    @keyframes pulse-glow {
+      0%,100% { box-shadow: 0 0 20px rgba(0,212,255,0.4); }
+      50%      { box-shadow: 0 0 35px rgba(0,212,255,0.7), 0 0 60px rgba(124,58,237,0.3); }
+    }
+
+    .brand-text {
+      font-family: 'Orbitron', sans-serif;
+      font-weight: 700;
+      font-size: 1.2rem;
+      background: linear-gradient(90deg, var(--primary), var(--secondary));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      letter-spacing: 1px;
+    }
+
+    .brand-sub {
+      font-size: .6rem;
+      color: var(--text-muted);
+      letter-spacing: 3px;
+      font-weight: 400;
+      display: block;
+      text-transform: uppercase;
+      -webkit-text-fill-color: var(--text-muted);
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: .5rem;
+      list-style: none;
+    }
+
+    .nav-links a {
+      display: flex;
+      align-items: center;
+      gap: .45rem;
+      padding: .5rem 1rem;
+      color: var(--text-muted);
+      text-decoration: none;
+      font-size: .875rem;
+      font-weight: 500;
+      border-radius: 8px;
+      transition: all .25s ease;
+      position: relative;
+    }
+
+    .nav-links a:hover, .nav-links a.active {
+      color: var(--primary);
+      background: rgba(0,212,255,0.08);
+    }
+
+    .nav-links a::after {
+      content: '';
+      position: absolute;
+      bottom: -1px; left: 50%; right: 50%;
+      height: 2px;
+      background: var(--primary);
+      border-radius: 2px;
+      transition: all .25s ease;
+    }
+
+    .nav-links a:hover::after, .nav-links a.active::after {
+      left: 10%; right: 10%;
+    }
+
+    .nav-badge {
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      color: #000;
+      font-size: .65rem;
+      font-weight: 700;
+      padding: .15rem .4rem;
+      border-radius: 4px;
+      letter-spacing: .5px;
+    }
+
+    .btn-nav-logout {
+      display: flex;
+      align-items: center;
+      gap: .5rem;
+      padding: .5rem 1.25rem;
+      background: linear-gradient(135deg, #ff4757, #c0392b);
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      font-size: .85rem;
+      font-weight: 600;
+      cursor: pointer;
+      text-decoration: none;
+      transition: all .25s ease;
+      box-shadow: 0 0 15px rgba(255,71,87,0.3);
+    }
+
+    .btn-nav-logout:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 0 25px rgba(255,71,87,0.5);
+      color: #fff;
+    }
+
+    /* ── MAIN CONTENT ── */
+    .main-content {
+      margin-top: var(--nav-h);
+      min-height: calc(100vh - var(--nav-h));
+    }
+
+    /* ── PAGE BG ── */
+    .page-bg {
+      position: fixed;
+      inset: 0;
+      z-index: -1;
+      background-image: url('https://images.unsplash.com/photo-1550751827-4bd374c3f58b?w=1920&q=80');
+      background-size: cover;
+      background-position: center;
+      background-attachment: fixed;
+      filter: brightness(0.2) saturate(0.8);
+    }
+
+    .page-bg::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, rgba(0,212,255,0.05) 0%, rgba(5,9,19,0.7) 50%, rgba(124,58,237,0.05) 100%);
+    }
+
+    /* ── GRID OVERLAY ── */
+    .grid-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: -1;
+      background-image:
+        linear-gradient(rgba(0,212,255,0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0,212,255,0.03) 1px, transparent 1px);
+      background-size: 50px 50px;
+      pointer-events: none;
+    }
+
+    /* ── ALERTS ── */
+    .alert-container {
+      position: fixed;
+      top: calc(var(--nav-h) + 1rem);
+      right: 1.5rem;
+      z-index: 999;
+      display: flex;
+      flex-direction: column;
+      gap: .6rem;
+      max-width: 380px;
+    }
+
+    .alert {
+      display: flex;
+      align-items: flex-start;
+      gap: .75rem;
+      padding: .9rem 1.2rem;
+      border-radius: 10px;
+      backdrop-filter: blur(20px);
+      border: 1px solid;
+      font-size: .875rem;
+      animation: slide-in .3s ease;
+    }
+
+    @keyframes slide-in {
+      from { opacity:0; transform: translateX(30px); }
+      to   { opacity:1; transform: translateX(0); }
+    }
+
+    .alert-success {
+      background: rgba(6,255,165,0.1);
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+
+    .alert-error, .alert-danger {
+      background: rgba(255,71,87,0.1);
+      border-color: var(--danger);
+      color: var(--danger);
+    }
+
+    .alert-warning {
+      background: rgba(255,165,2,0.1);
+      border-color: var(--warning);
+      color: var(--warning);
+    }
+
+    .alert-close {
+      margin-left: auto;
+      cursor: pointer;
+      opacity: .7;
+      font-size: 1rem;
+      background: none;
+      border: none;
+      color: inherit;
+      transition: opacity .2s;
+    }
+    .alert-close:hover { opacity: 1; }
+
+    /* ── COMMON CARDS ── */
+    .glass-card {
+      background: var(--bg-card);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      transition: all .3s ease;
+    }
+
+    .glass-card:hover {
+      border-color: rgba(0,212,255,0.4);
+      box-shadow: 0 8px 32px rgba(0,212,255,0.1);
+    }
+
+    /* ── BUTTONS ── */
+    .btn-primary {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: .5rem;
+      padding: .75rem 1.75rem;
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      color: #fff;
+      border: none;
+      border-radius: 10px;
+      font-size: .9rem;
+      font-weight: 600;
+      cursor: pointer;
+      text-decoration: none;
+      transition: all .3s ease;
+      box-shadow: 0 4px 20px rgba(0,212,255,0.3);
+      letter-spacing: .5px;
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 30px rgba(0,212,255,0.5);
+      color: #fff;
+    }
+
+    .btn-secondary {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: .5rem;
+      padding: .7rem 1.5rem;
+      background: transparent;
+      color: var(--primary);
+      border: 1px solid var(--primary);
+      border-radius: 10px;
+      font-size: .9rem;
+      font-weight: 600;
+      cursor: pointer;
+      text-decoration: none;
+      transition: all .3s ease;
+    }
+
+    .btn-secondary:hover {
+      background: rgba(0,212,255,0.1);
+      transform: translateY(-1px);
+      box-shadow: 0 4px 20px rgba(0,212,255,0.2);
+      color: var(--primary);
+    }
+
+    .btn-danger {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: .5rem;
+      padding: .5rem 1.1rem;
+      background: rgba(255,71,87,0.1);
+      color: var(--danger);
+      border: 1px solid rgba(255,71,87,0.3);
+      border-radius: 8px;
+      font-size: .82rem;
+      font-weight: 600;
+      cursor: pointer;
+      text-decoration: none;
+      transition: all .25s ease;
+    }
+
+    .btn-danger:hover {
+      background: rgba(255,71,87,0.2);
+      color: var(--danger);
+    }
+
+    .btn-success {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: .5rem;
+      padding: .5rem 1.1rem;
+      background: rgba(6,255,165,0.1);
+      color: var(--accent);
+      border: 1px solid rgba(6,255,165,0.3);
+      border-radius: 8px;
+      font-size: .82rem;
+      font-weight: 600;
+      cursor: pointer;
+      text-decoration: none;
+      transition: all .25s ease;
+    }
+
+    .btn-success:hover {
+      background: rgba(6,255,165,0.2);
+      color: var(--accent);
+    }
+
+    /* ── FORM INPUTS ── */
+    .form-group { margin-bottom: 1.25rem; }
+
+    .form-label {
+      display: block;
+      font-size: .8rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: .5rem;
+    }
+
+    .form-control {
+      width: 100%;
+      padding: .75rem 1rem .75rem 2.75rem;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(0,212,255,0.15);
+      border-radius: 10px;
+      color: var(--text);
+      font-size: .9rem;
+      font-family: 'Inter', sans-serif;
+      transition: all .25s ease;
+      outline: none;
+    }
+
+    .form-control:focus {
+      border-color: var(--primary);
+      background: rgba(0,212,255,0.05);
+      box-shadow: 0 0 0 3px rgba(0,212,255,0.1);
+    }
+
+    .form-control::placeholder { color: var(--text-muted); }
+
+    .input-icon-wrap {
+      position: relative;
+    }
+
+    .input-icon {
+      position: absolute;
+      left: .9rem;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--text-muted);
+      font-size: .85rem;
+      pointer-events: none;
+      transition: color .25s;
+    }
+
+    .input-icon-wrap:focus-within .input-icon { color: var(--primary); }
+
+    /* ── STATUS BADGES ── */
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: .3rem;
+      padding: .3rem .75rem;
+      border-radius: 20px;
+      font-size: .75rem;
+      font-weight: 600;
+      letter-spacing: .5px;
+      text-transform: uppercase;
+    }
+
+    .badge-active   { background: rgba(6,255,165,0.1);  color: var(--accent);  border: 1px solid rgba(6,255,165,0.3); }
+    .badge-blocked  { background: rgba(255,71,87,0.1);  color: var(--danger);  border: 1px solid rgba(255,71,87,0.3); }
+    .badge-pending  { background: rgba(255,165,2,0.1);  color: var(--warning); border: 1px solid rgba(255,165,2,0.3); }
+    .badge-admin    { background: rgba(124,58,237,0.1); color: #a78bfa;        border: 1px solid rgba(124,58,237,0.3); }
+
+    /* ── FOOTER ── */
+    .site-footer {
+      text-align: center;
+      padding: 1.5rem;
+      color: var(--text-muted);
+      font-size: .78rem;
+      border-top: 1px solid rgba(0,212,255,0.08);
+      margin-top: 3rem;
+    }
+
+    .site-footer span {
+      color: var(--primary);
+    }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 768px) {
+      .navbar { padding: 0 1rem; }
+      .brand-text { font-size: 1rem; }
+      .nav-links { gap: .25rem; }
+      .nav-links a { padding: .4rem .6rem; font-size: .8rem; }
+    }
+
+    {% block extra_styles %}{% endblock %}
+  </style>
+</head>
+<body>
+
+<!-- Background -->
+<div class="page-bg"></div>
+<div class="grid-overlay"></div>
+
+<!-- Navbar -->
+<nav class="navbar">
+  <a href="/" class="navbar-brand">
+    <div class="brand-icon"><i class="fas fa-shield-halved"></i></div>
+    <div>
+      <span class="brand-text">AI INSIDER</span>
+      <span class="brand-sub">Threat Detection</span>
+    </div>
+  </a>
+
+  <ul class="nav-links">
+    {% block nav_links %}{% endblock %}
+  </ul>
+
+  <div class="nav-actions">
+    {% block nav_actions %}{% endblock %}
+  </div>
+</nav>
+
+<!-- Flash Messages -->
+<div class="alert-container" id="alertContainer">
+  {% if messages %}
+    {% for message in messages %}
+    <div class="alert alert-{{ message.tags }}">
+      <i class="fas {% if message.tags == 'success' %}fa-circle-check{% elif message.tags == 'error' or message.tags == 'danger' %}fa-circle-xmark{% else %}fa-triangle-exclamation{% endif %}"></i>
+      <span>{{ message }}</span>
+      <button class="alert-close" onclick="this.parentElement.remove()"><i class="fas fa-xmark"></i></button>
+    </div>
+    {% endfor %}
+  {% endif %}
+</div>
+
+<!-- Main Content -->
+<main class="main-content">
+  {% block content %}{% endblock %}
+</main>
+
+<!-- Footer -->
+<footer class="site-footer">
+  &copy; 2025 <span>AI Insider</span> &mdash; Powered by Artificial Intelligence &bull; All rights reserved
+</footer>
+
+<script>
+  // Auto-dismiss alerts after 5s
+  setTimeout(() => {
+    document.querySelectorAll('.alert').forEach(a => {
+      a.style.transition = 'opacity .5s, transform .5s';
+      a.style.opacity = '0';
+      a.style.transform = 'translateX(30px)';
+      setTimeout(() => a.remove(), 500);
+    });
+  }, 5000);
+</script>
+
+{% block extra_scripts %}{% endblock %}
+</body>
+</html>
