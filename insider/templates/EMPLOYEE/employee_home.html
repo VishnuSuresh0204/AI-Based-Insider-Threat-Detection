@@ -1,0 +1,206 @@
+{% extends "EMPLOYEE/base_employee.html" %}
+
+{% block title %}Dashboard — Employee Portal{% endblock %}
+{% block nav_emp_home %}active{% endblock %}
+{% block side_emp_home %}active{% endblock %}
+
+{% block employee_styles %}
+.welcome-banner {
+  background: linear-gradient(135deg, rgba(0,212,255,0.1), rgba(124,58,237,0.1));
+  border: 1px solid rgba(0,212,255,0.2);
+  border-radius: 16px;
+  padding: 2rem;
+  margin-bottom: 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.welcome-text h1 {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 1.5rem;
+  margin-bottom: .5rem;
+  background: linear-gradient(90deg, var(--primary), var(--secondary));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+.welcome-text p { color: var(--text-muted); font-size: .9rem; }
+
+.status-badge {
+  display: flex; align-items: center; gap: .75rem;
+  padding: .75rem 1.25rem;
+  background: rgba(6,255,165,0.1);
+  border: 1px solid rgba(6,255,165,0.3);
+  border-radius: 12px;
+  color: var(--accent);
+  font-weight: 600;
+}
+
+/* ACTIVITY LOGGER CARD */
+.logger-card {
+  background: rgba(5,9,19,0.7);
+  backdrop-filter: blur(20px);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 2rem;
+}
+
+.logger-header { margin-bottom: 1.5rem; border-bottom: 1px solid rgba(0,212,255,0.1); padding-bottom: 1rem; }
+.logger-header h2 { font-size: 1.2rem; color: var(--text); display: flex; align-items: center; gap: .6rem; }
+.logger-header h2 i { color: var(--primary); }
+
+.log-form {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.25rem;
+}
+
+.result-box {
+  margin-top: 1.5rem;
+  padding: 1.5rem;
+  border-radius: 12px;
+  background: rgba(0,0,0,0.3);
+  border: 1px dashed var(--border);
+  display: none;
+}
+
+.result-box.show { display: block; animation: fade-in .4s ease; }
+
+@media (max-width: 768px) {
+  .log-form { grid-template-columns: 1fr; }
+}
+{% endblock %}
+
+{% block employee_content %}
+<div class="welcome-banner">
+  <div class="welcome-text">
+    <h1>Welcome, {{ request.user.username }}</h1>
+    <p>Your security status and recent activity overview.</p>
+  </div>
+  <div class="status-badge">
+    <i class="fas fa-shield-check" style="font-size:1.5rem;"></i>
+    <div>
+      <div style="font-size:.75rem; text-transform:uppercase; letter-spacing:1px; opacity:.8;">Account Status</div>
+      <div>SECURE & ACTIVE</div>
+    </div>
+  </div>
+</div>
+
+<div class="logger-card">
+  <div class="logger-header">
+    <h2><i class="fas fa-clipboard-check"></i> Log Current Activity</h2>
+    <p style="font-size:.85rem; color:var(--text-muted); margin-top:.3rem;">
+      Simulate an activity session to test the AI detection engine.
+    </p>
+  </div>
+
+  <form id="activityForm" class="log-form">
+    {% csrf_token %}
+    
+    <div class="form-group">
+      <label class="form-label">Device Type</label>
+      <select name="device" class="form-control">
+        <option value="Corporate Laptop">Corporate Laptop</option>
+        <option value="Personal Phone">Personal Phone</option>
+        <option value="Unknown Device">Unknown Device</option>
+      </select>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">Location</label>
+      <select name="location" class="form-control">
+        <option value="Office HQ">Office HQ</option>
+        <option value="Home Network">Home Network</option>
+        <option value="Public WiFi">Public WiFi (Coffee Shop)</option>
+        <option value="Foreign IP">Foreign IP Address</option>
+      </select>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">Files Downloaded</label>
+      <input type="number" name="files_downloaded" class="form-control" value="0" min="0"/>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">USB Connected</label>
+      <select name="usb_connected" class="form-control">
+        <option value="false">No</option>
+        <option value="true">Yes</option>
+      </select>
+    </div>
+    
+    <div class="form-group">
+      <label class="form-label">Failed Logins Before Success</label>
+      <input type="number" name="failed_login_attempts" class="form-control" value="0" min="0"/>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">Outside Office Hours?</label>
+      <select name="is_outside_office" class="form-control">
+        <option value="false">No (9 AM - 5 PM)</option>
+        <option value="true">Yes (Late Night / Early Morning)</option>
+      </select>
+    </div>
+
+    <div style="grid-column: 1 / -1; margin-top: 1rem;">
+      <button type="button" class="btn-primary" style="width:100%;" onclick="submitActivity()">
+        <i class="fas fa-microchip"></i> Run AI Evaluation
+      </button>
+    </div>
+  </form>
+
+  <div id="resultBox" class="result-box">
+    <h3 style="font-size:1.1rem; margin-bottom:.75rem; border-bottom:1px solid rgba(255,255,255,0.1); padding-bottom:.5rem;">AI Evaluation Result</h3>
+    <div id="resultContent" style="display:flex; flex-direction:column; gap:.5rem; font-size:.9rem;">
+      <!-- Results populated here via JS -->
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block employee_scripts %}
+<script>
+function submitActivity() {
+  const form = document.getElementById('activityForm');
+  const formData = new FormData(form);
+
+  fetch('/log_activity/', {
+    method: 'POST',
+    body: formData,
+    headers: {
+      'X-Requested-With': 'XMLHttpRequest'
+    }
+  })
+  .then(response => response.json())
+  .then(data => {
+    const resBox = document.getElementById('resultBox');
+    const content = document.getElementById('resultContent');
+    
+    let threatColor = 'var(--accent)';
+    if(data.threat_level === 'MEDIUM') threatColor = 'var(--warning)';
+    if(data.threat_level === 'HIGH' || data.threat_level === 'CRITICAL') threatColor = 'var(--danger)';
+
+    content.innerHTML = `
+      <div style="display:flex; justify-content:space-between;">
+        <span style="color:var(--text-muted);">Threat Level:</span>
+        <strong style="color:${threatColor}; font-family:'Orbitron',sans-serif;">${data.threat_level}</strong>
+      </div>
+      <div style="display:flex; justify-content:space-between;">
+        <span style="color:var(--text-muted);">Risk Score:</span>
+        <strong>${data.risk_score} / 100+</strong>
+      </div>
+      <div style="display:flex; justify-content:space-between;">
+        <span style="color:var(--text-muted);">Anomaly Detected:</span>
+        <strong style="color:${data.is_anomaly ? 'var(--danger)' : 'var(--accent)'}">${data.is_anomaly ? 'YES' : 'NO'}</strong>
+      </div>
+    `;
+    resBox.classList.add('show');
+  })
+  .catch(err => {
+    alert("Error logging activity: " + err);
+  });
+}
+</script>
+{% endblock %}

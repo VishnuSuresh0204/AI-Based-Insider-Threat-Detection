@@ -1,0 +1,138 @@
+{% extends "EMPLOYEE/base_employee.html" %}
+
+{% block title %}My Activity Log — Employee Portal{% endblock %}
+{% block nav_emp_activity %}active{% endblock %}
+{% block side_emp_activity %}active{% endblock %}
+
+{% block employee_styles %}
+.table-card {
+  background: rgba(5,9,19,0.7);
+  backdrop-filter: blur(20px);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  overflow: hidden;
+}
+
+.table-header {
+  padding: 1.5rem;
+  border-bottom: 1px solid rgba(0,212,255,0.1);
+  display: flex;
+  align-items: center;
+  gap: .75rem;
+}
+
+.table-header h2 { font-size: 1.25rem; color: var(--text); }
+.table-header i { color: var(--primary); }
+
+.data-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.data-table th, .data-table td {
+  padding: 1rem 1.5rem;
+  text-align: left;
+  border-bottom: 1px solid rgba(0,212,255,0.05);
+}
+
+.data-table th {
+  background: rgba(0,212,255,0.05);
+  color: var(--primary);
+  font-weight: 600;
+  font-size: .85rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.data-table td {
+  color: var(--text-muted);
+  font-size: .9rem;
+}
+
+.data-table tbody tr:hover {
+  background: rgba(255,255,255,0.02);
+}
+
+.badge-risk {
+  padding: .3rem .6rem;
+  border-radius: 8px;
+  font-size: .75rem;
+  font-weight: 600;
+}
+
+.badge-safe { background: rgba(6,255,165,0.1); color: var(--accent); border: 1px solid rgba(6,255,165,0.3); }
+.badge-medium { background: rgba(255,170,0,0.1); color: var(--warning); border: 1px solid rgba(255,170,0,0.3); }
+.badge-high, .badge-critical { background: rgba(255,68,68,0.1); color: var(--danger); border: 1px solid rgba(255,68,68,0.3); }
+
+.empty-state {
+  padding: 4rem 2rem;
+  text-align: center;
+  color: var(--text-muted);
+}
+.empty-state i { font-size: 3rem; color: rgba(0,212,255,0.2); margin-bottom: 1rem; }
+{% endblock %}
+
+{% block employee_content %}
+<div class="table-card">
+  <div class="table-header">
+    <i class="fas fa-list-check"></i>
+    <h2>My Recent Activity</h2>
+  </div>
+  
+  {% if val %}
+  <div style="overflow-x:auto;">
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>Time</th>
+          <th>Location</th>
+          <th>Device</th>
+          <th>Flags</th>
+          <th>AI Evaluation</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for act in val %}
+        <tr>
+          <td style="color:var(--text); font-weight:500;">{{ act.login_time|date:"M d, Y H:i" }}</td>
+          <td>
+            {% if act.location %}{{ act.location }}{% else %}<span style="opacity:0.5">Unknown</span>{% endif %}
+            {% if act.is_outside_office %}<div style="font-size:.75rem; color:var(--warning);"><i class="fas fa-moon"></i> Off-hours</div>{% endif %}
+          </td>
+          <td>{{ act.device|default:"Unknown" }}</td>
+          <td>
+            <div style="display:flex; gap:.5rem; flex-wrap:wrap;">
+              {% if act.usb_connected %}<span title="USB Connected"><i class="fab fa-usb" style="color:var(--warning)"></i></span>{% endif %}
+              {% if act.files_downloaded > 0 %}<span style="font-size:.8rem; background:rgba(255,255,255,0.1); padding:2px 6px; border-radius:4px;"><i class="fas fa-download"></i> {{ act.files_downloaded }}</span>{% endif %}
+              {% if act.failed_login_attempts > 0 %}<span style="font-size:.8rem; background:rgba(255,68,68,0.1); color:var(--danger); padding:2px 6px; border-radius:4px;"><i class="fas fa-triangle-exclamation"></i> {{ act.failed_login_attempts }} fails</span>{% endif %}
+              {% if not act.usb_connected and act.files_downloaded == 0 and act.failed_login_attempts == 0 %}
+                <span style="opacity:0.5">-</span>
+              {% endif %}
+            </div>
+          </td>
+          <td>
+            {% if hasattr(act, 'risk') %}
+              <span class="badge-risk 
+                {% if act.risk.threat_level == 'SAFE' %}badge-safe
+                {% elif act.risk.threat_level == 'MEDIUM' %}badge-medium
+                {% else %}badge-critical{% endif %}">
+                {{ act.risk.threat_level }}
+              </span>
+            {% else %}
+              <span class="badge-risk" style="background:rgba(255,255,255,0.1); color:#fff; border:1px solid rgba(255,255,255,0.2);">UNSCORED</span>
+            {% endif %}
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% else %}
+  <div class="empty-state">
+    <i class="fas fa-folder-open"></i>
+    <h3>No Activity Found</h3>
+    <p>You haven't generated any activity logs yet.</p>
+  </div>
+  {% endif %}
+</div>
+{% endblock %}
