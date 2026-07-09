@@ -4,4 +4,5 @@ from .models import *
 # Register your models here.
 admin.site.register(Login)
 admin.site.register(EmployeeProfile)
-  # Uncomment when model is created
+admin.site.register(UserActivity)
+admin.site.register(RiskAssessment)
