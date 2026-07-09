@@ -1,0 +1,86 @@
+{% extends "ADMIN/base_admin.html" %}
+
+{% block title %}Security Alerts — AI Insider{% endblock %}
+{% block nav_alerts %}active{% endblock %}
+
+{% block admin_content %}
+<div class="header-action">
+  <h2><i class="fas fa-triangle-exclamation" style="color:var(--danger);"></i> Security Alerts</h2>
+  <div class="search-bar">
+    <i class="fas fa-search"></i>
+    <input type="text" id="alertSearch" placeholder="Search alerts..." onkeyup="filterTable('alertSearch', 'alertTable')"/>
+  </div>
+</div>
+
+<div class="table-container">
+  <table class="admin-table" id="alertTable">
+    <thead>
+      <tr>
+        <th>Date & Time</th>
+        <th>User</th>
+        <th>Threat Level</th>
+        <th>Alert Details</th>
+        <th>Status</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for al in val %}
+      <tr>
+        <td style="color:var(--text); font-weight:500;">{{ al.created_at|date:"M d, Y H:i" }}</td>
+        <td>{{ al.risk_assessment.activity.loginid.username }}</td>
+        <td>
+          <span class="status-badge 
+            {% if al.risk_assessment.threat_level == 'CRITICAL' %}status-danger
+            {% elif al.risk_assessment.threat_level == 'HIGH' %}status-danger
+            {% else %}status-blocked{% endif %}">
+            {{ al.risk_assessment.threat_level }} ({{ al.risk_assessment.risk_score }})
+          </span>
+        </td>
+        <td>
+          <div style="font-size:.85rem; color:var(--text-muted); max-width: 300px; line-height:1.4;">
+            {{ al.message }}
+          </div>
+        </td>
+        <td>
+          <span class="status-badge 
+            {% if al.status == 'OPEN' %}status-danger
+            {% elif al.status == 'INVESTIGATING' %}status-blocked
+            {% else %}status-active{% endif %}">
+            {{ al.status }}
+          </span>
+        </td>
+        <td>
+          {% if al.status != 'RESOLVED' and al.status != 'FALSE_POSITIVE' %}
+          <div style="display:flex; gap:.5rem;">
+            {% if al.status == 'OPEN' %}
+            <a href="/admin_alert_action?id={{ al.id }}&act=investigating" class="btn-action" title="Investigate" style="background:rgba(255,170,0,0.1); color:var(--warning); border-color:rgba(255,170,0,0.3);">
+              <i class="fas fa-search"></i>
+            </a>
+            {% endif %}
+            <a href="/admin_alert_action?id={{ al.id }}&act=resolved" class="btn-action" title="Mark Resolved" style="background:rgba(6,255,165,0.1); color:var(--accent); border-color:rgba(6,255,165,0.3);">
+              <i class="fas fa-check"></i>
+            </a>
+            <a href="/admin_alert_action?id={{ al.id }}&act=false_positive" class="btn-action" title="False Positive" style="background:rgba(255,255,255,0.1); color:#fff; border-color:rgba(255,255,255,0.3);">
+              <i class="fas fa-ban"></i>
+            </a>
+          </div>
+          {% else %}
+          <div style="font-size:.75rem; color:var(--text-muted);">
+            Closed by {{ al.resolved_by.username }}
+          </div>
+          {% endif %}
+        </td>
+      </tr>
+      {% empty %}
+      <tr>
+        <td colspan="6" style="text-align:center; padding:3rem; color:var(--text-muted);">
+          <i class="fas fa-shield-check" style="font-size:3rem; opacity:0.3; margin-bottom:1rem; color:var(--accent);"></i>
+          <p>No security alerts to display. All clear!</p>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

@@ -1,0 +1,81 @@
+{% extends "ADMIN/base_admin.html" %}
+
+{% block title %}All User Activities — AI Insider{% endblock %}
+{% block nav_act %}active{% endblock %}
+
+{% block admin_content %}
+<div class="header-action">
+  <h2><i class="fas fa-network-wired" style="color:var(--primary);"></i> User Activities Log</h2>
+  <div class="search-bar">
+    <i class="fas fa-search"></i>
+    <input type="text" id="actSearch" placeholder="Search activities..." onkeyup="filterTable('actSearch', 'actTable')"/>
+  </div>
+</div>
+
+<div class="table-container">
+  <table class="admin-table" id="actTable">
+    <thead>
+      <tr>
+        <th>User</th>
+        <th>Time</th>
+        <th>Location / IP</th>
+        <th>Device</th>
+        <th>Actions</th>
+        <th>AI Threat Level</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for a in val %}
+      <tr>
+        <td>
+          <div style="display:flex; align-items:center; gap:.75rem;">
+            <div style="width:32px;height:32px;border-radius:50%;background:rgba(0,212,255,0.1);color:var(--primary);display:flex;align-items:center;justify-content:center;">
+              <i class="fas fa-user"></i>
+            </div>
+            <div>
+              <div style="color:var(--text); font-weight:600;">{{ a.loginid.username }}</div>
+            </div>
+          </div>
+        </td>
+        <td>{{ a.login_time|date:"M d, H:i" }}</td>
+        <td>
+          <div>{{ a.location|default:"Unknown" }}</div>
+          <div style="font-size:.75rem; opacity:0.6;">{{ a.ip_address }}</div>
+        </td>
+        <td>{{ a.device|default:"-" }}</td>
+        <td>
+          <div style="font-size:.8rem; display:flex; flex-direction:column; gap:.2rem;">
+            {% if a.files_downloaded > 0 %}<div><i class="fas fa-download text-warning"></i> {{ a.files_downloaded }} DLs</div>{% endif %}
+            {% if a.usb_connected %}<div><i class="fab fa-usb text-danger"></i> USB Active</div>{% endif %}
+            {% if a.failed_login_attempts > 0 %}<div><i class="fas fa-lock text-danger"></i> {{ a.failed_login_attempts }} Fails</div>{% endif %}
+            {% if a.is_outside_office %}<div><i class="fas fa-clock text-warning"></i> Off-hours</div>{% endif %}
+            {% if not a.files_downloaded and not a.usb_connected and not a.failed_login_attempts and not a.is_outside_office %}
+              <span style="opacity:0.4;">Normal</span>
+            {% endif %}
+          </div>
+        </td>
+        <td>
+          {% if hasattr(a, 'risk') %}
+            <span class="status-badge 
+              {% if a.risk.threat_level == 'SAFE' %}status-active
+              {% elif a.risk.threat_level == 'MEDIUM' %}status-blocked
+              {% else %}status-danger{% endif %}">
+              {{ a.risk.threat_level }} ({{ a.risk.risk_score }})
+            </span>
+          {% else %}
+            <span class="status-badge" style="background:rgba(255,255,255,0.1); color:#fff;">UNSCORED</span>
+          {% endif %}
+        </td>
+      </tr>
+      {% empty %}
+      <tr>
+        <td colspan="6" style="text-align:center; padding:3rem; color:var(--text-muted);">
+          <i class="fas fa-folder-open" style="font-size:3rem; opacity:0.3; margin-bottom:1rem;"></i>
+          <p>No activities recorded yet.</p>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}
