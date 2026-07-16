@@ -100,10 +100,12 @@ def admin_home(request):
         return chk
 
     context = {
-        "total_alerts": Alert.objects.count(),
-        "open_alerts": Alert.objects.filter(status="OPEN").count(),
-        "critical_count": RiskAssessment.objects.filter(threat_level="CRITICAL").count(),
-        "total_employees": EmployeeProfile.objects.count(),
+        "total_alerts":      Alert.objects.count(),
+        "open_alerts":       Alert.objects.filter(status="OPEN").count(),
+        "critical_count":    RiskAssessment.objects.filter(threat_level="CRITICAL").count(),
+        "total_employees":   EmployeeProfile.objects.count(),
+        "active_employees":  EmployeeProfile.objects.filter(status="active").count(),
+        "blocked_employees": EmployeeProfile.objects.filter(status="blocked").count(),
     }
     return render(request, "ADMIN/admin_home.html", context)
 
