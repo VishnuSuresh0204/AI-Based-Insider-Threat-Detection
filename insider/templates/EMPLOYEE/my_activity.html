@@ -111,7 +111,7 @@
             </div>
           </td>
           <td>
-            {% if hasattr(act, 'risk') %}
+            {% if act.risk %}
               <span class="badge-risk 
                 {% if act.risk.threat_level == 'SAFE' %}badge-safe
                 {% elif act.risk.threat_level == 'MEDIUM' %}badge-medium
