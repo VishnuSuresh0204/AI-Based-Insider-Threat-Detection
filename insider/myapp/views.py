@@ -202,32 +202,39 @@ def log_activity(request):
     if request.method != "POST":
         return JsonResponse({"error": "POST required"}, status=405)
 
-    l = Login.objects.get(id=request.session["lid"])
-    now = timezone.now()
+    try:
+        l = Login.objects.get(id=request.session["lid"])
+        now = timezone.now()
 
-    activity = UserActivity.objects.create(
-        loginid=l,
-        login_time=now,
-        ip_address=request.META.get("REMOTE_ADDR", "0.0.0.0"),
-        device=request.POST.get("device", ""),
-        location=request.POST.get("location", ""),
-        files_downloaded=int(request.POST.get("files_downloaded", 0)),
-        files_opened=int(request.POST.get("files_opened", 0)),
-        usb_connected=request.POST.get("usb_connected") == "true",
-        failed_login_attempts=int(request.POST.get("failed_login_attempts", 0)),
-        emails_sent=int(request.POST.get("emails_sent", 0)),
-        is_weekend=now.weekday() >= 5,
-        is_outside_office=request.POST.get("is_outside_office") == "true",
-    )
+        def get_int(key, default=0):
+            val = request.POST.get(key, "").strip()
+            return int(val) if val.isdigit() else default
 
-    result = run_detection(activity)
+        activity = UserActivity.objects.create(
+            loginid=l,
+            login_time=now,
+            ip_address=request.META.get("REMOTE_ADDR", "0.0.0.0"),
+            device=request.POST.get("device", ""),
+            location=request.POST.get("location", ""),
+            files_downloaded=get_int("files_downloaded"),
+            files_opened=get_int("files_opened"),
+            usb_connected=request.POST.get("usb_connected") == "true",
+            failed_login_attempts=get_int("failed_login_attempts"),
+            emails_sent=get_int("emails_sent"),
+            is_weekend=now.weekday() >= 5,
+            is_outside_office=request.POST.get("is_outside_office") == "true",
+        )
 
-    return JsonResponse({
-        "activity_id": activity.id,
-        "threat_level": result["threat_level"],
-        "risk_score": result["risk_score"],
-        "is_anomaly": result["is_anomaly"],
-    })
+        result = run_detection(activity)
+
+        return JsonResponse({
+            "activity_id": activity.id,
+            "threat_level": result["threat_level"],
+            "risk_score": result["risk_score"],
+            "is_anomaly": result["is_anomaly"],
+        })
+    except Exception as e:
+        return JsonResponse({"error": str(e)}, status=500)
 
 
 def run_detection(activity):
