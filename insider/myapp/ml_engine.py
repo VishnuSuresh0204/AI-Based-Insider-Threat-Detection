@@ -98,7 +98,7 @@ def predict(activity, model=None):
     raw_prediction = model.predict(X)[0]        # -1 or 1
     score = model.decision_function(X)[0]        # continuous anomaly score
 
-    is_anomaly = raw_prediction == -1
+    is_anomaly = bool(raw_prediction == -1)
     return is_anomaly, float(score)
 
 
