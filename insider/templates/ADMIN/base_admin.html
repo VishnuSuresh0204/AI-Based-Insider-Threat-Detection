@@ -530,28 +530,21 @@
   <div class="sidebar-section-label">Security</div>
   <ul class="sidebar-nav">
     <li>
-      <a href="#">
+      <a href="/admin_view_alerts/" class="{% block nav_alerts %}{% endblock %}">
         <span class="nav-icon"><i class="fas fa-triangle-exclamation"></i></span>
         Threat Alerts
-        <span class="nav-count">!</span>
       </a>
     </li>
     <li>
-      <a href="#">
-        <span class="nav-icon"><i class="fas fa-chart-line"></i></span>
-        Analytics
-      </a>
-    </li>
-    <li>
-      <a href="#">
-        <span class="nav-icon"><i class="fas fa-file-shield"></i></span>
-        Reports
-      </a>
-    </li>
-    <li>
-      <a href="#">
+      <a href="/admin_view_activities/" class="{% block nav_activities %}{% endblock %}">
         <span class="nav-icon"><i class="fas fa-eye"></i></span>
         Activity Logs
+      </a>
+    </li>
+    <li>
+      <a href="/admin_retrain_model/" class="{% block nav_retrain %}{% endblock %}">
+        <span class="nav-icon"><i class="fas fa-brain"></i></span>
+        Retrain AI Model
       </a>
     </li>
   </ul>
@@ -560,13 +553,7 @@
   <div class="sidebar-section-label">System</div>
   <ul class="sidebar-nav">
     <li>
-      <a href="#">
-        <span class="nav-icon"><i class="fas fa-gear"></i></span>
-        Settings
-      </a>
-    </li>
-    <li>
-      <a href="/signout">
+      <a href="/signout/">
         <span class="nav-icon"><i class="fas fa-right-from-bracket"></i></span>
         Sign Out
       </a>
